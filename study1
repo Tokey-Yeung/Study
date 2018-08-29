@@ -1,0 +1,71 @@
+import re
+import requests
+from bs4 import BeautifulSoup
+
+heard={"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0"}
+def gethtml (url):
+    try:
+        r=requests.get(url,params=heard)
+        r.raise_for_status()
+        r.encoding=r.apparent_encoding
+        html=r.text
+    except:
+        print("连接失败")
+    return html
+
+"""def gettext(html):
+    reg ="<h1>(.*?)</h1>"           #匹配h1标签中的标题
+    reg = re.compile(reg)
+    tittle=re.search(reg,html)
+    reg2=".*?<br />.*?"
+    reg2=re.compile(reg2)
+    text=re.findall(reg2,html)
+    print(text)
+    soup=BeautifulSoup(html,"html.parser")
+    tittle=soup.title
+    #print(tittle.string)
+    text=soup.find_all('div',id="htmlContent")[0]
+    #print(text)
+    return tittle,text"""
+
+def keeptittle(html):
+    soup=BeautifulSoup(html,"html.parser")
+    tittle=soup.title.string
+    fo = open('C:/Users/Tokey/Downloads/1.txt', "ab+")  # 打开小说文件
+    # 以二进制写入章节题目 需要转换为utf-8编码，否则会出现乱码
+    fo.write(('\r' + str(tittle) + '\r\n').encode('UTF-8'))
+    # 以二进制写入章节内容
+    return ""
+
+def keeptext(html):
+    soup = BeautifulSoup(html, "html.parser")
+    text = soup.find_all('div', id="htmlContent")[0]
+    print(str(text)[135:-85])
+    """fo = open('C:/Users/Tokey/Downloads/1.txt', "ab+")  # 打开小说文件
+    # 以二进制写入章节题目 需要转换为utf-8编码，否则会出现乱码
+    fo.write((text).encode('UTF-8'))
+    fo.close()  # 关闭小说文件"""
+    return ""
+
+def geturl(html):
+    soup = BeautifulSoup(html, "html.parser")
+    url=soup.find_all(id="linkNext")
+    url=re.search('href="(.*?)"',str(url))
+    return url.group(1)
+
+def main():
+    url="http://www.bixiawenxue.org/book/937/283487.html"
+    for i in range(1,4):
+        html=gethtml(url).replace('<br />', '')
+        #keeptittle(html)
+        #keeptext(html)
+        url=str(geturl(html))
+        print(url)
+        #print("\t已完成{.%}".format(i/1496),end="")
+
+"""url="http://www.bixiawenxue.org/book/937/283487.html"
+html=gethtml(url).replace('<br />', '')
+keeptext(html)"""
+
+main()
+
